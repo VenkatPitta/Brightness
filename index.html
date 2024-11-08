@@ -1,0 +1,247 @@
+import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
+const BrightnessVisualization = () => {
+  const [selectedSplit, setSelectedSplit] = useState('train');
+  const [selectedClass, setSelectedClass] = useState('normal_frames');
+
+  const data = {
+    "train": {
+        "corrosion": {
+            "min_brightness": 3.8181278935185183,
+            "max_brightness": 188.96977864583334,
+            "mean_brightness": 134.04311344871599,
+            "median_brightness": 144.517333984375,
+            "std_brightness": 24.91675657861274,
+            "num_images": 2206
+        },
+        "deposits": {
+            "min_brightness": 78.89552083333334,
+            "max_brightness": 188.77392939814814,
+            "mean_brightness": 123.02212995277873,
+            "median_brightness": 123.48228515624999,
+            "std_brightness": 27.31515158932178,
+            "num_images": 732
+        },
+        "joint seperation": {
+            "min_brightness": 59.846966145833335,
+            "max_brightness": 197.37787760416666,
+            "mean_brightness": 126.88830797553393,
+            "median_brightness": 132.9571484375,
+            "std_brightness": 33.96039605094899,
+            "num_images": 119
+        },
+        "normal_frames": {
+            "min_brightness": 63.18206886574074,
+            "max_brightness": 186.53160481770834,
+            "mean_brightness": 140.9234128737307,
+            "median_brightness": 143.8451969401042,
+            "std_brightness": 14.906283525640564,
+            "num_images": 2814
+        }
+    },
+    "val": {
+        "corrosion": {
+            "min_brightness": 88.13617476851852,
+            "max_brightness": 185.44203450520834,
+            "mean_brightness": 144.36280192024407,
+            "median_brightness": 148.699326171875,
+            "std_brightness": 19.736632357912285,
+            "num_images": 275
+        },
+        "deposits": {
+            "min_brightness": 62.3784375,
+            "max_brightness": 166.1801953125,
+            "mean_brightness": 123.80704422006984,
+            "median_brightness": 128.62965494791666,
+            "std_brightness": 32.583768307750724,
+            "num_images": 152
+        },
+        "joint seperation": {
+            "min_brightness": 125.60947265625,
+            "max_brightness": 147.21614583333334,
+            "mean_brightness": 140.99724074590773,
+            "median_brightness": 147.01206217447918,
+            "std_brightness": 9.620916148425772,
+            "num_images": 14
+        },
+        "normal_frames": {
+            "min_brightness": 99.99649643132716,
+            "max_brightness": 185.62530623070987,
+            "mean_brightness": 147.10641653119617,
+            "median_brightness": 149.00665364583332,
+            "std_brightness": 15.027952669786373,
+            "num_images": 351
+        }
+    },
+    "test": {
+        "corrosion": {
+            "min_brightness": 66.57944444444445,
+            "max_brightness": 189.33831018518518,
+            "mean_brightness": 135.43510488830532,
+            "median_brightness": 132.83650462962962,
+            "std_brightness": 26.087730470494964,
+            "num_images": 277
+        },
+        "deposits": {
+            "min_brightness": 62.746419270833336,
+            "max_brightness": 170.13908854166667,
+            "mean_brightness": 122.05734745472569,
+            "median_brightness": 133.52695963541666,
+            "std_brightness": 32.32234547927094,
+            "num_images": 151
+        },
+        "joint seperation": {
+            "min_brightness": 111.994306640625,
+            "max_brightness": 153.43702473958334,
+            "mean_brightness": 136.57105428059896,
+            "median_brightness": 139.98984375,
+            "std_brightness": 12.350192363239016,
+            "num_images": 16
+        },
+        "normal_frames": {
+            "min_brightness": 24.93559718276515,
+            "max_brightness": 217.40377363040125,
+            "mean_brightness": 120.33184178011476,
+            "median_brightness": 119.08571759259259,
+            "std_brightness": 38.04898290415452,
+            "num_images": 353
+        }
+    }
+  };
+
+  const selectedData = data[selectedSplit][selectedClass];
+  const maxPossibleBrightness = 255;
+
+  const getWidthPercentage = (value) => {
+    return (value / maxPossibleBrightness) * 100;
+  };
+
+  return (
+    <Card className="w-full max-w-4xl">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold">Brightness Statistics</CardTitle>
+        <div className="flex flex-wrap gap-2 mt-4">
+          <div>
+            <p className="text-sm font-medium mb-2">Data Split:</p>
+            <div className="flex gap-2">
+              {Object.keys(data).map((split) => (
+                <Button
+                  key={split}
+                  onClick={() => setSelectedSplit(split)}
+                  variant={selectedSplit === split ? "default" : "outline"}
+                  className="capitalize"
+                >
+                  {split}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Class:</p>
+            <div className="flex gap-2">
+              {Object.keys(data[selectedSplit]).map((className) => (
+                <Button
+                  key={className}
+                  onClick={() => setSelectedClass(className)}
+                  variant={selectedClass === className ? "default" : "outline"}
+                  className="capitalize"
+                >
+                  {className.replace('_', ' ')}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm font-medium mb-1">Distribution</p>
+            <div className="h-16 w-full bg-gray-100 rounded-lg relative">
+              {/* Full range */}
+              <div
+                className="absolute h-full bg-blue-200 rounded-lg"
+                style={{ 
+                  left: `${getWidthPercentage(selectedData.min_brightness)}%`, 
+                  width: `${getWidthPercentage(selectedData.max_brightness - selectedData.min_brightness)}%` 
+                }}
+              />
+              {/* Standard deviation range */}
+              <div
+                className="absolute h-full bg-blue-400 rounded-lg"
+                style={{ 
+                  left: `${getWidthPercentage(selectedData.mean_brightness - selectedData.std_brightness)}%`,
+                  width: `${getWidthPercentage(selectedData.std_brightness * 2)}%`,
+                  opacity: 0.6
+                }}
+              />
+              {/* Median line */}
+              <div 
+                className="absolute h-full w-2 bg-blue-600" 
+                style={{ left: `${getWidthPercentage(selectedData.median_brightness)}%` }} 
+              />
+              {/* Mean line */}
+              <div 
+                className="absolute h-full w-2 bg-green-600" 
+                style={{ left: `${getWidthPercentage(selectedData.mean_brightness)}%` }} 
+              />
+            </div>
+            <div className="flex justify-between text-sm mt-1">
+              <span>{selectedData.min_brightness.toFixed(1)}</span>
+              <span>{selectedData.max_brightness.toFixed(1)}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-medium mb-1">Statistics</p>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm">Mean:</span>
+                  <span className="text-sm font-medium">{selectedData.mean_brightness.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm">Median:</span>
+                  <span className="text-sm font-medium">{selectedData.median_brightness.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm">Std Dev:</span>
+                  <span className="text-sm font-medium">±{selectedData.std_brightness.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium mb-1">Legend</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-blue-200"></div>
+                  <span className="text-sm">Full Range</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-blue-400"></div>
+                  <span className="text-sm">±1 Std Dev</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-green-600"></div>
+                  <span className="text-sm">Mean</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-blue-600"></div>
+                  <span className="text-sm">Median</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm font-medium">Number of Images: {selectedData.num_images}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default BrightnessVisualization;
